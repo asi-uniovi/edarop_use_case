@@ -1,0 +1,10 @@
+# Trace files
+edge_1h.csv
+
+.ipynb_checkpoints
+.python-version
+__pycache__
+
+*.png
+*.pdf
+*.p
