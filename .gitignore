@@ -5,6 +5,5 @@ edge_1h.csv
 .python-version
 __pycache__
 
-*.png
 *.pdf
 *.p
