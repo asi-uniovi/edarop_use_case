@@ -11,12 +11,17 @@ from rich.markdown import Markdown
 from rich.table import Table
 from rich import print
 
+from cloudmodel.unified.units import (
+    Time,
+    CurrencyPerTime,
+    RequestsPerTime,
+    Requests,
+    Currency,
+)
+
 from edarop.model import (
     Region,
-    TimeUnit,
-    TimeValue,
     InstanceClass,
-    TimeRatioValue,
     App,
     Performance,
     Workload,
@@ -25,6 +30,7 @@ from edarop.model import (
     Latency,
     Status,
     Solution,
+    COST_UNDEFINED,
 )
 from edarop.edarop import (
     EdaropCAllocator,
@@ -45,7 +51,8 @@ def get_workload(
 ) -> tuple[int, ...]:
     """Returns the workload values for an app in a region. It gets them from the
     dataframe."""
-    wl = tuple(wdf[(wdf.app == app) & (wdf.reg == region)].reqs)
+    reqs = wdf[(wdf.app == app) & (wdf.reg == region)].reqs
+    wl = tuple(Requests(f"{i} reqs") for i in reqs)
     if time_slot is not None:
         return (wl[time_slot],)
     return wl
@@ -85,67 +92,67 @@ def set_up(
     latencies = {
         # eu-central-1-ham-1a
         (regions["eu-central-1-ham-1a-u"], regions["eu-central-1-ham-1a"]): Latency(
-            value=TimeValue(0.00872, TimeUnit("s")),
+            value=Time("0.00872 s"),
         ),
         (regions["eu-central-1-ham-1a-u"], regions["eu-central-1"]): Latency(
-            value=TimeValue(0.0162, TimeUnit("s")),
+            value=Time("0.0162 s"),
         ),
         (regions["eu-central-1-ham-1a-u"], regions["us-east-1"]): Latency(
-            value=TimeValue(0.1069, TimeUnit("s")),
+            value=Time("0.1069 s"),
         ),
         (regions["eu-central-1-ham-1a-u"], regions["us-west-2"]): Latency(
-            value=TimeValue(0.2143, TimeUnit("s")),
+            value=Time("0.2143 s"),
         ),
         (regions["eu-central-1-ham-1a-u"], regions["ap-south-1"]): Latency(
-            value=TimeValue(0.1258, TimeUnit("s")),
+            value=Time("0.1258 s"),
         ),
         # us-east-1-atl-1a
         (regions["us-east-1-atl-1a-u"], regions["us-east-1-atl-1a"]): Latency(
-            value=TimeValue(0.0011, TimeUnit("s")),
+            value=Time("0.0011 s"),
         ),
         (regions["us-east-1-atl-1a-u"], regions["eu-central-1"]): Latency(
-            value=TimeValue(0.1058, TimeUnit("s")),
+            value=Time("0.1058 s"),
         ),
         (regions["us-east-1-atl-1a-u"], regions["us-east-1"]): Latency(
-            value=TimeValue(0.0151, TimeUnit("s")),
+            value=Time("0.0151 s"),
         ),
         (regions["us-east-1-atl-1a-u"], regions["us-west-2"]): Latency(
-            value=TimeValue(0.0662, TimeUnit("s")),
+            value=Time("0.0662 s"),
         ),
         (regions["us-east-1-atl-1a-u"], regions["ap-south-1"]): Latency(
-            value=TimeValue(0.2033, TimeUnit("s")),
+            value=Time("0.2033 s"),
         ),
         # us-west-2-lax-1a
         (regions["us-west-2-lax-1a-u"], regions["us-west-2-lax-1a"]): Latency(
-            value=TimeValue(0.0009, TimeUnit("s")),
+            value=Time("0.0009 s"),
         ),
         (regions["us-west-2-lax-1a-u"], regions["eu-central-1"]): Latency(
-            value=TimeValue(0.1479, TimeUnit("s")),
+            value=Time("0.1479 s"),
         ),
         (regions["us-west-2-lax-1a-u"], regions["us-east-1"]): Latency(
-            value=TimeValue(0.0599, TimeUnit("s")),
+            value=Time("0.0599 s"),
         ),
         (regions["us-west-2-lax-1a-u"], regions["us-west-2"]): Latency(
-            value=TimeValue(0.0236, TimeUnit("s")),
+            value=Time("0.0236 s"),
         ),
         (regions["us-west-2-lax-1a-u"], regions["ap-south-1"]): Latency(
-            value=TimeValue(0.2472, TimeUnit("s")),
+            value=Time("0.2472 s"),
         ),
         # ap-south-1-del-1a
         (regions["ap-south-1-del-1a-u"], regions["ap-south-1-del-1a"]): Latency(
-            value=TimeValue(0.0085, TimeUnit("s")),
+            value=Time("0.0085 s"),
         ),
         (regions["ap-south-1-del-1a-u"], regions["eu-central-1"]): Latency(
-            value=TimeValue(0.1794, TimeUnit("s")),
+            value=Time("0.1794 s"),
         ),
         (regions["ap-south-1-del-1a-u"], regions["us-east-1"]): Latency(
-            value=TimeValue(0.2346, TimeUnit("s")),
+            value=Time("0.2346 s"),
         ),
         (regions["ap-south-1-del-1a-u"], regions["us-west-2"]): Latency(
-            value=TimeValue(0.2949, TimeUnit("s")),
+            value=Time("0.2949 s"),
         ),
         (regions["ap-south-1-del-1a-u"], regions["ap-south-1"]): Latency(
-            value=TimeValue(0.0271, TimeUnit("s")),
+            value=Time("0.0271 s"),
         ),
     }
 
@@ -154,74 +161,74 @@ def set_up(
         # eu-central-1
         InstanceClass(
             name="c5.2xlarge-eu-central-1",
-            price=TimeRatioValue(0.388, TimeUnit("h")),
+            price=CurrencyPerTime("0.388 usd/h"),
             region=regions["eu-central-1"],
         ),
         InstanceClass(
             name="c5.4xlarge-eu-central-1",
-            price=TimeRatioValue(0.776, TimeUnit("h")),
+            price=CurrencyPerTime("0.776 usd/h"),
             region=regions["eu-central-1"],
         ),
         # eu-central-1-ham-1a
         InstanceClass(
             name="c5.2xlarge-eu-central-1-ham-1a",
-            price=TimeRatioValue(0.524, TimeUnit("h")),
+            price=CurrencyPerTime("0.524 usd/h"),
             region=regions["eu-central-1-ham-1a"],
         ),
         # us-east-1
         InstanceClass(
             name="c5.2xlarge-us-east-1",
-            price=TimeRatioValue(0.34, TimeUnit("h")),
+            price=CurrencyPerTime("0.34 usd/h"),
             region=regions["us-east-1"],
         ),
         InstanceClass(
             name="c5.4xlarge-us-east-1",
-            price=TimeRatioValue(0.68, TimeUnit("h")),
+            price=CurrencyPerTime("0.68 usd/h"),
             region=regions["us-east-1"],
         ),
         # us-east-1-atl-1a
         InstanceClass(
             name="c5d.2xlarge-us-east-1-atl-1a",
-            price=TimeRatioValue(0.48, TimeUnit("h")),
+            price=CurrencyPerTime("0.48 usd/h"),
             region=regions["us-east-1-atl-1a"],
         ),
         # us-west-2
         InstanceClass(
             name="c5.2xlarge-us-west-2",
-            price=TimeRatioValue(0.34, TimeUnit("h")),
+            price=CurrencyPerTime("0.34 usd/h"),
             region=regions["us-west-2"],
         ),
         InstanceClass(
             name="c5.4xlarge-us-west-2",
-            price=TimeRatioValue(0.68, TimeUnit("h")),
+            price=CurrencyPerTime("0.68 usd/h"),
             region=regions["us-west-2"],
         ),
         # us-east-1-atl-1a
         InstanceClass(
             name="c5.2xlarge-us-west-2-lax-1a",
-            price=TimeRatioValue(0.408, TimeUnit("h")),
+            price=CurrencyPerTime("0.408 usd/h"),
             region=regions["us-west-2-lax-1a"],
         ),
         InstanceClass(
             name="c5.4xlarge-us-west-2-lax-1a",
-            price=TimeRatioValue(0.816, TimeUnit("h")),
+            price=CurrencyPerTime("0.816 usd/h"),
             region=regions["us-west-2-lax-1a"],
         ),
         # ap-south-1
         InstanceClass(
             name="c5.2xlarge-ap-south-1",
-            price=TimeRatioValue(0.34, TimeUnit("h")),
+            price=CurrencyPerTime("0.34 usd/h"),
             region=regions["ap-south-1"],
         ),
         InstanceClass(
             name="c5.4xlarge-ap-south-1",
-            price=TimeRatioValue(0.68, TimeUnit("h")),
+            price=CurrencyPerTime("0.68 usd/h"),
             region=regions["ap-south-1"],
         ),
         # ap-south-1-del-1
         InstanceClass(
             name="c5.2xlarge-ap-south-1-del-1a",
-            price=TimeRatioValue(0.459, TimeUnit("h")),
+            price=CurrencyPerTime("0.459 usd/h"),
             region=regions["ap-south-1-del-1a"],
         ),
     )
@@ -229,9 +236,9 @@ def set_up(
     ics = {i.name: i for i in ic_list}
 
     app_list = (
-        App(name="a0", max_resp_time=TimeValue(0.2, TimeUnit("s"))),
-        App(name="a1", max_resp_time=TimeValue(0.325, TimeUnit("s"))),
-        App(name="a2", max_resp_time=TimeValue(0.050, TimeUnit("s"))),
+        App(name="a0", max_resp_time=Time("0.2 s")),
+        App(name="a1", max_resp_time=Time("0.325 s")),
+        App(name="a2", max_resp_time=Time("0.050 s")),
     )
 
     apps = {a.name: a for a in app_list}
@@ -291,8 +298,8 @@ def set_up(
     perfs = {}
     for p, v in perf_dict.items():
         perfs[p] = Performance(
-            value=TimeRatioValue(v[0], TimeUnit("s")),
-            slo=TimeValue(v[1], TimeUnit("s")),
+            value=RequestsPerTime(f"{v[0]} req/s"),
+            slo=Time(f"{v[1]} s"),
         )
 
     system = System(apps=app_list, ics=ic_list, perfs=perfs, latencies=latencies)
@@ -304,7 +311,7 @@ def set_up(
         for a in range(len(app_list)):
             workloads[(app_list[a], user_region_list[r])] = Workload(
                 values=get_workload(wdf, app=a, region=r, time_slot=time_slot),
-                time_unit=TimeUnit("h"),
+                time_unit=Time("h"),
             )
 
     return (system, workloads)
@@ -317,8 +324,10 @@ def solve_for_one_timeslot(
     console = Console()
 
     system, workloads = set_up(time_slot)
-    problem = Problem(system=system, workloads=workloads, max_cost=-1)
-    problem_edarop_r = Problem(system=system, workloads=workloads, max_cost=200)
+    problem = Problem(system=system, workloads=workloads, max_cost=COST_UNDEFINED)
+    problem_edarop_r = Problem(
+        system=system, workloads=workloads, max_cost=Currency("200 usd")
+    )
 
     ProblemPrettyPrinter(problem).print()
 
@@ -427,7 +436,7 @@ def summary_cell_to_str(cell) -> str:
 
     return (
         f"${cell['cost']:.2f}\n"
-        f"{cell['avg_resp_time'].value*1000:.2f} ms\n"
+        f"{cell['avg_resp_time'].to('ms').magnitude:.2f} ms\n"
         f"{cell['status']}\n"
         f"{cell['deadline_miss_rate']*100:.2f} %"
     )
@@ -473,7 +482,7 @@ def solve_all_time_slots_individually() -> None:
             if summaries[j]["cost"] == "-":
                 continue  # The solution is not optimal
             totals["cost"][j] += summaries[j]["cost"]
-            totals["resp_time"][j] += summaries[j]["avg_resp_time"].value
+            totals["resp_time"][j] += summaries[j]["avg_resp_time"].to("s").magnitude
             totals["deadline_miss_rate"][j] += summaries[j]["deadline_miss_rate"]
 
             apps = list(summaries[j]["total_reqs_per_app"].keys())

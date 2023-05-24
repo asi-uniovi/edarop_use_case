@@ -9,6 +9,8 @@ from rich.console import Console
 from rich.table import Table
 from rich import print
 
+from cloudmodel.unified.units import Time, Requests, RequestsPerTime, Currency
+
 import malloovia
 import edarop
 import edarop.model
@@ -35,7 +37,6 @@ class Edarop2Malloovia:
 
     def __convert_problem(self) -> malloovia.model.Problem:
         units_h_str = "h"
-        hours = edarop.model.TimeUnit(units_h_str)
 
         # Malloovia apps
         malloovia_apps = []
@@ -65,9 +66,11 @@ class Edarop2Malloovia:
                     continue
 
                 for ts in range(num_time_slots):
-                    malloovia_wls[malloovia_app][ts] += self.edarop_problem.workloads[
-                        edarop_app, region
-                    ].values[ts]
+                    malloovia_wls[malloovia_app][ts] += (
+                        self.edarop_problem.workloads[edarop_app, region]
+                        .values[ts]
+                        .magnitude
+                    )
 
         malloovia_wl_list = []
         for malloovia_app in malloovia_apps:
@@ -87,7 +90,7 @@ class Edarop2Malloovia:
             malloovia_ic = malloovia.InstanceClass(
                 id=edarop_ic.name,
                 name=edarop_ic.name,
-                price=edarop_ic.price.to(hours),
+                price=edarop_ic.price.to("usd/h").magnitude,
                 time_unit=units_h_str,
                 # Should be set(), but it generates "TypeError: unhashable type: 'set'"
                 limiting_sets=(),
@@ -107,7 +110,9 @@ class Edarop2Malloovia:
             perf_dict[malloovia_ic] = {}
             for edarop_app in self.edarop_problem.system.apps:
                 malloovia_app = e2m_apps[edarop_app]
-                perf_hours = edarop_perfs[edarop_app, edarop_ic].value.to(hours)
+                perf_hours = (
+                    edarop_perfs[edarop_app, edarop_ic].value.to("req/h").magnitude
+                )
                 perf_dict[malloovia_ic][malloovia_app] = perf_hours
 
         malloovia_perfs = malloovia.PerformanceSet(
@@ -254,7 +259,7 @@ class Edarop2Malloovia:
                 if (e_app, e_region) not in e_wls:
                     continue
 
-                reqs = e_wls[e_app, e_region].values[ts_num]
+                reqs = e_wls[e_app, e_region].values[ts_num].magnitude
 
                 ts_reqs[e_app, e_region, e_ic] = math.ceil(reqs * ic_share)
 
