@@ -12,6 +12,7 @@ from rich.table import Table
 from rich import print
 
 from cloudmodel.unified.units import (
+    ComputationalUnits,
     Time,
     CurrencyPerTime,
     RequestsPerTime,
@@ -163,73 +164,86 @@ def set_up(
             name="c5.2xlarge-eu-central-1",
             price=CurrencyPerTime("0.388 usd/h"),
             region=regions["eu-central-1"],
+            cores=ComputationalUnits("8 core"),
         ),
         InstanceClass(
             name="c5.4xlarge-eu-central-1",
             price=CurrencyPerTime("0.776 usd/h"),
             region=regions["eu-central-1"],
+            cores=ComputationalUnits("16 core"),
         ),
         # eu-central-1-ham-1a
         InstanceClass(
             name="c5.2xlarge-eu-central-1-ham-1a",
             price=CurrencyPerTime("0.524 usd/h"),
             region=regions["eu-central-1-ham-1a"],
+            cores=ComputationalUnits("8 core"),
         ),
         # us-east-1
         InstanceClass(
             name="c5.2xlarge-us-east-1",
             price=CurrencyPerTime("0.34 usd/h"),
             region=regions["us-east-1"],
+            cores=ComputationalUnits("8 core"),
         ),
         InstanceClass(
             name="c5.4xlarge-us-east-1",
             price=CurrencyPerTime("0.68 usd/h"),
             region=regions["us-east-1"],
+            cores=ComputationalUnits("16 core"),
         ),
         # us-east-1-atl-1a
         InstanceClass(
             name="c5d.2xlarge-us-east-1-atl-1a",
             price=CurrencyPerTime("0.48 usd/h"),
             region=regions["us-east-1-atl-1a"],
+            cores=ComputationalUnits("8 core"),
         ),
         # us-west-2
         InstanceClass(
             name="c5.2xlarge-us-west-2",
             price=CurrencyPerTime("0.34 usd/h"),
             region=regions["us-west-2"],
+            cores=ComputationalUnits("8 core"),
         ),
         InstanceClass(
             name="c5.4xlarge-us-west-2",
             price=CurrencyPerTime("0.68 usd/h"),
             region=regions["us-west-2"],
+            cores=ComputationalUnits("16 core"),
         ),
         # us-east-1-atl-1a
         InstanceClass(
             name="c5.2xlarge-us-west-2-lax-1a",
             price=CurrencyPerTime("0.408 usd/h"),
             region=regions["us-west-2-lax-1a"],
+            cores=ComputationalUnits("8 core"),
         ),
         InstanceClass(
             name="c5.4xlarge-us-west-2-lax-1a",
             price=CurrencyPerTime("0.816 usd/h"),
             region=regions["us-west-2-lax-1a"],
+            cores=ComputationalUnits("16 core"),
         ),
         # ap-south-1
         InstanceClass(
             name="c5.2xlarge-ap-south-1",
             price=CurrencyPerTime("0.34 usd/h"),
             region=regions["ap-south-1"],
+            cores=ComputationalUnits("8 core"),
         ),
         InstanceClass(
             name="c5.4xlarge-ap-south-1",
             price=CurrencyPerTime("0.68 usd/h"),
             region=regions["ap-south-1"],
+            cores=ComputationalUnits("16 core"),
         ),
         # ap-south-1-del-1
         InstanceClass(
             name="c5.2xlarge-ap-south-1-del-1a",
             price=CurrencyPerTime("0.459 usd/h"),
             region=regions["ap-south-1-del-1a"],
+            cores=ComputationalUnits("8 core"),
         ),
     )
 
